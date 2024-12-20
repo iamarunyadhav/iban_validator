@@ -61,7 +61,7 @@ php artisan migrate
 php artisan serve
 
 
-### This will typically serve your backend on http://localhost:8000
+### This will typically serve your backend on http://127.0.0.1:8000  (run this port as default frontend .env config is not working)
 
 Happy start
 
