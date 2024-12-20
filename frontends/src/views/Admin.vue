@@ -1,26 +1,45 @@
 <template>
-    <div>
-      <Navbar/>
+  <div>
+    <Navbar/>
     <div class="container mt-5">
       <ul class="nav nav-tabs">
         <li class="nav-item">
-          <a class="nav-link" :class="{ active: activeTab === 'user' }" href="#" @click="activeTab = 'user'">Users</a>
+          <a class="nav-link" :class="{ active: activeTab === 'user' }" @click.prevent="activeTab = 'user'">Users</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" :class="{ active: activeTab === 'ibanList' }" href="#" @click="activeTab = 'ibanList'">IBAN List</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" :class="{ active: activeTab === 'create' }" href="#" @click="activeTab = 'create'"><i class="fa fa-plus"></i> Create</a>
+          <a class="nav-link" :class="{ active: activeTab === 'ibanList' }" @click.prevent="activeTab = 'ibanList'">IBAN List</a>
         </li>
       </ul>
 
       <div class="tab-content mt-3">
-        <div v-show="activeTab === 'user'" class="container">
-          <h2>Manage Users</h2>
-          <!-- User management content here -->
+        <div v-show="activeTab === 'user'">
+          <h2>IBAN List</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>IBAN Number</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="iban in ibanList.data" :key="iban.id">
+                <td>{{ iban.iban }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- Pagination Controls -->
+          <nav>
+            <ul class="pagination">
+              <li class="page-item" :class="{ disabled: ibanList.current_page === 1 }">
+                <a class="page-link" href="#" @click="fetchIbanList(ibanList.current_page - 1)">Previous</a>
+              </li>
+              <li class="page-item" :class="{ disabled: ibanList.current_page === ibanList.last_page }">
+                <a class="page-link" href="#" @click="fetchIbanList(ibanList.current_page + 1)">Next</a>
+              </li>
+            </ul>
+          </nav>
         </div>
-        <div v-show="activeTab === 'ibanList'" class="container">
-          <h2>IBAN Records</h2>
+        <div v-show="activeTab === 'ibanList'">
+          <h2>IBAN Detail Record</h2>
           <table class="table">
             <thead>
               <tr>
@@ -31,51 +50,68 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="iban in ibanList" :key="iban.id">
-                <td>{{ iban.user_id }}</td>
-                <td>{{ iban.user.name }}</td>
-                <td>{{ iban.user.email }}</td>
-                <td>{{ iban.iban }}</td>
+              <tr v-for="detail in ibanList.data" :key="detail.id">
+                <td>{{ detail.user_id }}</td>
+                <td>{{ detail.name }}</td>
+                <td>{{ detail.email }}</td>
+                <td>{{ detail.iban }}</td>
               </tr>
             </tbody>
           </table>
-        </div>
-        <div v-show="activeTab === 'create'" class="container">
-          <h2>Create New Entry</h2>
-          <!-- Form to create new entries -->
+          <!-- Pagination Controls -->
+          <nav>
+            <ul class="pagination">
+              <li class="page-item" :class="{ disabled: ibanList.current_page === 1 }">
+                <a class="page-link" href="#" @click="fetchIbanList(ibanList.current_page - 1)">Previous</a>
+              </li>
+              <li class="page-item" :class="{ disabled: ibanList.current_page === ibanList.last_page }">
+                <a class="page-link" href="#" @click="fetchIbanList(ibanList.current_page + 1)">Next</a>
+              </li>
+            </ul>
+          </nav>
         </div>
       </div>
     </div>
   </div>
 </template>
 
+
+
 <script>
 import axios from 'axios';
 import Navbar from '@/components/Navbar.vue';
+// Import the Pagination component at the beginning of your script
+import Pagination from '@/components/Pagination.vue';
 
 export default {
   components: {
-    Navbar
+    Navbar,
+    Pagination  // Make sure to register the Pagination component here
   },
   data() {
-    return {
-      activeTab: 'user',  // default tab
-      ibanList: [],  // Array to hold the IBAN list data
-    };
-  },
-  methods: {
-    fetchIbanList() {
-      axios.get('http://127.0.0.1:8000/api/v1/users/iban/list')
-        .then(response => {
-          this.ibanList = response.data;  // Assume the response data is the list you want
-        })
-        .catch(error => {
-          console.error('Error fetching IBAN list:', error);
-        });
+  return {
+    activeTab: 'user',
+    ibanList: {
+      data: [],
+      current_page: 1,
+      last_page: 1,
+      links: []
     }
-  },
+  };
+},
+methods: {
+  fetchIbanList(page = 1) {
+    axios.get(`http://127.0.0.1:8000/api/v1/users/ibans/list?page=${page}`)
+      .then(response => {
+        this.ibanList = response.data; // Assuming your API follows Laravel's pagination format
+      })
+      .catch(error => {
+        console.error('Error fetching IBAN list:', error);
+      });
+  }
+},
   mounted() {
-    this.fetchIbanList();  // Fetch the list when the component is mounted
+    this.fetchIbanList();
   }
 }
 </script>

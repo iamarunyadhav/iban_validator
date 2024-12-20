@@ -33,6 +33,9 @@
                 <button type="submit" class="btn btn-primary">Register</button>
               </div>
             </form>
+            <div v-if="validationMessage" class="alert mt-3" :class="{'alert-success': isValid, 'alert-danger': !isValid}" role="alert">
+                  {{ validationMessage }}
+             </div>
           </div>
         </div>
       </div>
@@ -58,7 +61,9 @@ export default {
         email: '',
         password: '',
         password_confirmation: ''
-      }
+      },
+      validationMessage: '',
+      isValid: false
     };
   },
   methods: {
@@ -66,11 +71,20 @@ export default {
       axios.get('/sanctum/csrf-cookie').then(response => {
         axios.post('http://127.0.0.1:8000/api/v1/register', this.form)
           .then(response => {
-            console.log('Registered:', response);
-            this.$router.push('/');
+            this.isValid = true; // Set to true on successful register
+            this.validationMessage = response.data.message || 'Successfully Registered !';
+            setTimeout(() => {
+              this.isValid = false;
+              this.validationMessage = "";
+              this.$router.push('/');
+            }, 3000);
           })
           .catch(error => {
-            console.error('Error:', error.response);
+            this.isValid = false;
+            this.validationMessage = error.response.data.message || 'Register failed. Please check your input data.';
+            setTimeout(() => {
+              this.validationMessage = "";
+            }, 3000);
           });
       });
     }
