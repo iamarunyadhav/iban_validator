@@ -90,7 +90,7 @@ export default {
         id:localStorage.getItem('user_id')
       }
 
-      axios.get('/sanctum/csrf-cookie').then(response => {
+      axios.get('sanctum/csrf-cookie').then(response => {
         axios.post('http://127.0.0.1:8000/api/v1/ibans/check', payload, {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('token')
