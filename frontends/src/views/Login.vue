@@ -20,6 +20,10 @@
                 <button type="submit" class="btn btn-primary">Sign In</button>
               </div>
             </form>
+
+            <div v-if="validationMessage" class="alert mt-3" :class="{'alert-success': isValid, 'alert-danger': !isValid}" role="alert">
+                  {{ validationMessage }}
+             </div>
           </div>
         </div>
       </div>
@@ -39,39 +43,48 @@ export default {
     Footer
   },
   data() {
-    return {
-      form: {
-        email: '',
-        password: ''
-      }
-    };
+      return {
+        form: {
+          email: '',
+          password: ''
+        },
+        validationMessage: '',
+        isValid: false
+      };
   },
-  methods: {
-  login() {
-    axios.get('/sanctum/csrf-cookie').then(response => {
-      axios.post('http://127.0.0.1:8000/api/v1/login', this.form, { withCredentials: true })
-        .then(response => {
-          console.log('Logged in:', response.data.token);
-          // this.$store.commit('setUserId', response.data.user_id);
-          this.$store.commit('setAuthentication', true);
-          localStorage.setItem('token',response.data.token);
-          if (response.data.user_role === 'admin') {
-            this.$router.push('/admin-dashboard');
-          } else {
-            this.$router.push('/user-dashboard');
-          }
-        })
-        .catch(error => {
-          console.error('Login error:', error);
-          alert('Login failed: ' + (error.response.data.message || 'Unknown error'));
-        });
-    }).catch(error => {
-      console.error('CSRF cookie error:', error);
-    });
-  }
-}
 
-};
+  methods: {
+    login() {
+      axios.get('/sanctum/csrf-cookie').then(response => {
+        axios.post('http://127.0.0.1:8000/api/v1/login', this.form, { withCredentials: true })
+          .then(response => {
+            console.log(response.data.user_id);
+            this.isValid = true; // Set to true on successful login
+            this.validationMessage = response.data.message || 'Successfully logged in!';
+            this.$store.commit('setAuthentication', true);
+            localStorage.setItem('token',response.data.token);
+            localStorage.setItem('user_id',response.data.user_id);
+            setTimeout(() => {
+              this.isValid = false;
+              this.validationMessage = "";
+              this.$router.push(response.data.user_role === 'admin' ? '/admin-dashboard' : '/user-dashboard');
+            }, 3000);
+          })
+          .catch(error => {
+            this.isValid = false; // Should be false when there is an error
+            this.validationMessage = (error.response && error.response.data.message) || 'Login failed. Please check your credentials.';
+            setTimeout(() => {
+              this.validationMessage = "";
+            }, 3000);
+          });
+      }).catch(error => {
+        this.isValid = false; // Should be false on CSRF error
+        this.validationMessage = (error.response && error.response.data.message) || 'CSRF cookie error. Please try again.';
+        setTimeout(() => {
+          this.validationMessage = "";
+        }, 3000);
+      });
+    }}}
 </script>
 
 <style scoped>

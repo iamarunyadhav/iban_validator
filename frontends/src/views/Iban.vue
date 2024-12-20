@@ -85,19 +85,31 @@ export default {
         return;
       }
 
+      const payload={
+        iban: this.iban,
+        id:localStorage.getItem('user_id')
+      }
+
       axios.get('/sanctum/csrf-cookie').then(response => {
-        axios.post('http://127.0.0.1:8000/api/v1/ibans/check', { iban: this.iban }, {
+        axios.post('http://127.0.0.1:8000/api/v1/ibans/check', payload, {
           headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('token')  // Added space after 'Bearer'
+            Authorization: 'Bearer ' + localStorage.getItem('token')
           }
         })
         .then(response => {
-          this.isValid = response.data.isValid;
-          this.validationMessage = response.data.message;
+          this.isValid = true;
+            this.validationMessage = response.data.message || 'IBAN Saved Successfully !';
+            setTimeout(() => {
+              this.isValid = false;
+              this.validationMessage = "";
+            }, 3000);
         })
         .catch(error => {
           this.isValid = false;
           this.validationMessage = error.response ? error.response.data.message : 'Network or server error occurred while validating IBAN.';
+          setTimeout(() => {
+            this.validationMessage = "";
+          }, 3000);
         });
 
     })
