@@ -13,11 +13,11 @@
 
       <div class="tab-content mt-3">
         <div v-show="activeTab === 'user'">
-          <h2>IBAN List</h2>
-          <table class="table">
-            <thead>
+          <h2 class="fw-bold">IBAN List</h2>
+          <table class="table table-bordered">
+            <thead class="fw-bold">
               <tr>
-                <th>IBAN Number</th>
+                <th class="fw-bold">IBAN Number</th>
               </tr>
             </thead>
             <tbody>
@@ -39,14 +39,14 @@
           </nav>
         </div>
         <div v-show="activeTab === 'ibanList'">
-          <h2>IBAN Detail Record</h2>
-          <table class="table">
+          <h2 class="fw-bold">IBAN Detail Record</h2>
+          <table class="table table-bordered">
             <thead>
               <tr>
-                <th>User ID</th>
-                <th>User Name</th>
-                <th>Email</th>
-                <th>IBAN Number</th>
+                <th class="fw-bold">User ID</th>
+                <th class="fw-bold"> User Name</th>
+                <th class="fw-bold">Email</th>
+                <th class="fw-bold">IBAN Number</th>
               </tr>
             </thead>
             <tbody>
@@ -80,7 +80,6 @@
 <script>
 import axios from 'axios';
 import Navbar from '@/components/Navbar.vue';
-// Import the Pagination component at the beginning of your script
 import Pagination from '@/components/Pagination.vue';
 
 export default {
@@ -103,7 +102,7 @@ methods: {
   fetchIbanList(page = 1) {
     axios.get(`http://127.0.0.1:8000/api/v1/users/ibans/list?page=${page}`)
       .then(response => {
-        this.ibanList = response.data; // Assuming your API follows Laravel's pagination format
+        this.ibanList = response.data;
       })
       .catch(error => {
         console.error('Error fetching IBAN list:', error);
@@ -119,6 +118,7 @@ methods: {
 
 
 <style scoped>
+
 .container {
   max-width: 1200px; /* Wider container for admin panel */
   margin: 0 auto;

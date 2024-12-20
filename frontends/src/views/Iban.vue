@@ -19,8 +19,8 @@
           <p><strong>IBAN Structure Validation:</strong> This includes checking the specific positions and characters inside the IBAN as per each country's internal rules. This check is crucial where internal account number check digit validation is not supported.</p>
           <p><strong>Possible Outcomes:</strong></p>
           <ul>
-            <li>IBAN Formatting and Structure is correct!</li>
-            <li>IBAN Formatting and Structure is not correct!</li>
+            <li>IBAN Formatting and Structure is valid!</li>
+            <li>IBAN Formatting and Structure is not valid!</li>
           </ul>
           <h4>Format and Structure Checks Include:</h4>
           <ul>

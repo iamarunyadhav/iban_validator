@@ -1,7 +1,7 @@
 <template>
   <footer class="footer">
     <div class="container text-center text-white">
-      Powered by Ascentic Poc© {{ currentYear }}
+      POC Powered by Ascentic© {{ currentYear }}
     </div>
   </footer>
 </template>

@@ -69,7 +69,7 @@ header {
 
 /* Button enhancements */
 .btn-primary {
-  background-color: #0069d9;
+  background-color: #007bff;
   border-color: #0062cc;
 }
 
