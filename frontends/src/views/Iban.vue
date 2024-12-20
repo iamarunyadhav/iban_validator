@@ -63,6 +63,7 @@
 import axios from 'axios';
 import Navbar from '@/components/Navbar.vue';
 import Footer from '@/components/Footer.vue';
+import config from '@/config';
 
 export default {
   components: {
@@ -73,7 +74,8 @@ export default {
     return {
       iban: '',
       validationMessage: '',
-      isValid: false
+      isValid: false,
+      apiUrl:config.apiUrl
     };
   },
   methods: {
@@ -91,7 +93,7 @@ export default {
       }
 
       axios.get('sanctum/csrf-cookie').then(response => {
-        axios.post('http://127.0.0.1:8000/api/v1/ibans/check', payload, {
+        axios.post(`${this.apiUrl}/v1/ibans/check`, payload, {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('token')
           }

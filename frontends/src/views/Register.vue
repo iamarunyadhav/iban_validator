@@ -1,6 +1,7 @@
 <template>
   <div>
     <Navbar/>
+
   <div class="container mt-5">
     <div class="row justify-content-center">
       <div class="col-md-12">
@@ -49,9 +50,11 @@
 </div>
 </template>
 <script>
+
 import axios from 'axios';
 import Navbar from '@/components/Navbar.vue';
 import Footer from '@/components/Footer.vue';
+import config from '@/config';
 export default {
   components: {
     Navbar,
@@ -65,6 +68,7 @@ export default {
         password: '',
         password_confirmation: ''
       },
+      apiUrl: config.apiUrl ,
       validationMessage: '',
       isValid: false,
       passwordErrors: ''
@@ -72,12 +76,13 @@ export default {
   },
   methods: {
     register() {
+
       if (!this.validatePassword(this.form.password)) {
         this.passwordErrors = 'Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character.';
         return;
       }
       axios.get('/sanctum/csrf-cookie').then(response => {
-        axios.post('http://127.0.0.1:8000/api/v1/register', this.form)
+        axios.post(`${this.apiUrl}/v1/register`, this.form)
           .then(response => {
             this.isValid = true; // Set to true on successful register
             this.validationMessage = response.data.message || 'Successfully Registered!';

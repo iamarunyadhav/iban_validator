@@ -28,7 +28,8 @@ git clone https://github.com/iamarunyadhav/iban_validator.git
 cd iban_validator/frontend
 
 ## create  .env file
-cp .env.example .env
+## app_url
+use config.js
 
 # endpoint
 VUE_APP_API_ENDPOINT=http://localhost:8000/api/v1

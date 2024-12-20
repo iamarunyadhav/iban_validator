@@ -81,7 +81,7 @@
 import axios from 'axios';
 import Navbar from '@/components/Navbar.vue';
 import Pagination from '@/components/Pagination.vue';
-
+import config from '@/config';
 export default {
   components: {
     Navbar,
@@ -95,7 +95,8 @@ export default {
       current_page: 1,
       last_page: 1,
       links: []
-    }
+    },
+    apiUrl:config.apiUrl
   };
 },
 methods: {
@@ -103,7 +104,7 @@ methods: {
     // First, ensure CSRF protection by retrieving the CSRF cookie
     axios.get('/sanctum/csrf-cookie').then(response => {
       // After ensuring the CSRF cookie is set, make the actual GET request
-      axios.get(`http://127.0.0.1:8000/api/v1/users/ibans/list?page=${page}`, {
+      axios.get(`${this.apiUrl}/v1/users/ibans/list?page=${page}`, {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('token')  // Ensure you have the auth token
         }

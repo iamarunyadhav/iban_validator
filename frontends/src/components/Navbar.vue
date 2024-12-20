@@ -26,17 +26,24 @@
 
 <<script>
 import { mapGetters, mapActions } from 'vuex';
+import config from '@/config';
 import axios from 'axios';
 export default {
   name: 'Navbar',
+  data() {
+    return {
+      apiUrl:config.apiUrl
+    }
+  },
   computed: {
     ...mapGetters([
       'isAuthenticated'
     ])
   },
+
   methods: {
     logout() {
-        axios.post('http://127.0.0.1:8000/api/v1/logout',localStorage.getItem('token'), {
+        axios.post(`${this.apiUrl}/v1/logout`,localStorage.getItem('token'), {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('token')
           }
