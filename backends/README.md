@@ -63,8 +63,8 @@ php artisan db:seed
 php artisan serve
 
 
-### This will typically serve your backend on http://localhost:8000
-
+### This will typically serve your backend 
+Note : http://127.0.0.1:8000   #(run this port as default for backend frontend .env config is not working)
 Happy start
 
 
