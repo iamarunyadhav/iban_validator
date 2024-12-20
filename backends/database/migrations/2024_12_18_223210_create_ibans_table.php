@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('ibans', function (Blueprint $table) {
             $table->id();
-            $table->string('iban');
+            $table->string('iban')->unique();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
