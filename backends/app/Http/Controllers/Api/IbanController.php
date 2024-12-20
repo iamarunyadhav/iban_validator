@@ -90,7 +90,7 @@ class IbanController extends Controller
         $ibansWithUsers = FacadesDB::table('ibans')
             ->join('users', 'ibans.user_id', '=', 'users.id')
             ->select('ibans.*', 'users.name', 'users.email')
-            ->get();
+            ->paginate(10);
         return $ibansWithUsers;
     }
 }

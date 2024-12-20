@@ -19,15 +19,14 @@ use App\Http\Controllers\Api\IbanController;
 */
 
 Route::prefix('v1')->group(function () {
-    Route::post('/login', [LoginController::class ,'loginUser']);
-    Route::post('/register', [RegisterController::class,'createUser']);
-    Route::post('/ibans/check', [IbanController::class, 'validateIban']);
-    Route::get('/users/ibans/list',[IbanController::class, 'ibanUsersList']);
+    Route::post('/login', [LoginController::class ,'loginUser'])->name('login');
+    Route::post('/register', [RegisterController::class,'createUser'])->name('createUser');
+    Route::post('/ibans/check', [IbanController::class, 'validateIban'])->name('validateIban');
+    Route::get('/users/ibans/list',[IbanController::class, 'ibanUsersList'])->name('ibanUsersList');
+    
     Route::middleware(['auth:sanctum'])->group(function () {
         // Route::get('/users',[UserController::class,'getAlluser']);
-        Route::post('/logout', LogoutController::class);
-        Route::post('/logout', LogoutController::class);
-        
+        Route::post('/logout', LogoutController::class);   
     });
 });
 
