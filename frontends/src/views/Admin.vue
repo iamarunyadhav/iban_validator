@@ -100,15 +100,26 @@ export default {
 },
 methods: {
   fetchIbanList(page = 1) {
-    axios.get(`http://127.0.0.1:8000/api/v1/users/ibans/list?page=${page}`)
+    // First, ensure CSRF protection by retrieving the CSRF cookie
+    axios.get('/sanctum/csrf-cookie').then(response => {
+      // After ensuring the CSRF cookie is set, make the actual GET request
+      axios.get(`http://127.0.0.1:8000/api/v1/users/ibans/list?page=${page}`, {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token')  // Ensure you have the auth token
+        }
+      })
       .then(response => {
         this.ibanList = response.data;
       })
       .catch(error => {
         console.error('Error fetching IBAN list:', error);
       });
+    }).catch(error => {
+      console.error('Error retrieving CSRF token:', error);
+    });
   }
 },
+
   mounted() {
     this.fetchIbanList();
   }
