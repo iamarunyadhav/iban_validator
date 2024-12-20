@@ -1,0 +1,140 @@
+{
+	"info": {
+		"_postman_id": "10c73800-0abc-4a2d-a43c-f17ad88f8c21",
+		"name": "Laravel API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "24328222"
+	},
+	"item": [
+		{
+			"name": "RegisterUser",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"arun\",\r\n  \"email\": \"arun.pragash32@gmail.com\",\r\n  \"password\": \"Zone@1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/register"
+			},
+			"response": []
+		},
+		{
+			"name": "LoginUser",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/login?email=arun.pragash32@gmail.com&password=Zone@1234",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "email",
+							"value": "arun.pragash32@gmail.com"
+						},
+						{
+							"key": "password",
+							"value": "Zone@1234"
+						},
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "IbanValidate",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/ibans/check?iban=KW81CBKU0000000000001234560101&id=5",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"ibans",
+						"check"
+					],
+					"query": [
+						{
+							"key": "iban",
+							"value": "KW81CBKU0000000000001234560101"
+						},
+						{
+							"key": "id",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "IBANlist",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{base_url}}/users/ibans/list"
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "R0JAo3QNqdcEqQvH4AWci7iHwdutP398fHsE6erU751fcd13"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"url": "{{base_url}}/logout"
+			},
+			"response": []
+		}
+	]
+}
