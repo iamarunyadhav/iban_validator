@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Iban;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB as FacadesDB;
 
@@ -19,14 +20,22 @@ class IbanController extends Controller
         if (!$this->isValidFormat($iban) || !$this->isValidChecksum($iban) || $this->countrySpecificChecks($iban)) {
             return response()->json(['message' => 'IBAN is invalid'], 422);
         }
-
-        // Store the IBAN if it's valid
-        $ibanRecord = Iban::create([
-            'iban' => $iban,
-            'user_id' => 2// Ensure your user is authenticated
-        ]);
-
-        return response()->json(['message' => 'IBAN is valid and saved', 'iban' => $ibanRecord], 201);
+         $userId=$request->id;
+        try {
+            $ibanRecord = Iban::create([
+                'iban' => $iban,
+                'user_id' => $userId // Ensuring that user is authenticated and getting the ID from authenticated user session
+            ]);
+    
+            return response()->json(['message' => 'IBAN is valid and saved', 'iban' => $ibanRecord], 201);
+        } catch (QueryException $e) {
+            $errorCode = $e->errorInfo[1];
+            if ($errorCode == 1062) { 
+                return response()->json(['message' => 'This IBAN already exists in our database.'], 409);
+            }
+            return response()->json(['message' => 'Failed to save IBAN due to a server error.', 'error' => $e->getMessage()], 500);
+        }
+    
     }
 
     private function isValidFormat($iban)
@@ -76,14 +85,14 @@ class IbanController extends Controller
         return null;  // No error
     }
 
-    // public function ibanUsersList()
-    // {
-    //     $ibansWithUsers = FacadesDB::table('ibans')
-    //         ->join('users', 'ibans.user_id', '=', 'users.id')
-    //         ->select('ibans.*', 'users.name', 'users.email') // Specify the columns you need
-    //         ->get();
-    //     dd($ibansWithUsers);
-    // }
+    public function ibanUsersList()
+    {
+        $ibansWithUsers = FacadesDB::table('ibans')
+            ->join('users', 'ibans.user_id', '=', 'users.id')
+            ->select('ibans.*', 'users.name', 'users.email')
+            ->get();
+        return $ibansWithUsers;
+    }
 }
 
 
