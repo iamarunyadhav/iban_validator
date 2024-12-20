@@ -58,7 +58,7 @@ export default {
       axios.get('/sanctum/csrf-cookie').then(response => {
         axios.post('http://127.0.0.1:8000/api/v1/login', this.form, { withCredentials: true })
           .then(response => {
-            console.log(response.data.user_id);
+            // console.log(response.data.user_id);
             this.isValid = true; // Set to true on successful login
             this.validationMessage = response.data.message || 'Successfully logged in!';
             this.$store.commit('setAuthentication', true);
