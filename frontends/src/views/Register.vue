@@ -22,7 +22,11 @@
               <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" v-model="form.password" placeholder="Create a password">
+                <div v-if="passwordErrors" class="text-danger mt-2">
+                    {{ passwordErrors }}
+                  </div>
               </div>
+
               <!-- Password Confirmation field -->
               <div class="mb-3">
                 <label for="password_confirmation" class="form-label">Confirm Password</label>
@@ -48,7 +52,6 @@
 import axios from 'axios';
 import Navbar from '@/components/Navbar.vue';
 import Footer from '@/components/Footer.vue';
-
 export default {
   components: {
     Navbar,
@@ -63,16 +66,21 @@ export default {
         password_confirmation: ''
       },
       validationMessage: '',
-      isValid: false
+      isValid: false,
+      passwordErrors: ''
     };
   },
   methods: {
     register() {
+      if (!this.validatePassword(this.form.password)) {
+        this.passwordErrors = 'Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character.';
+        return;
+      }
       axios.get('/sanctum/csrf-cookie').then(response => {
         axios.post('http://127.0.0.1:8000/api/v1/register', this.form)
           .then(response => {
             this.isValid = true; // Set to true on successful register
-            this.validationMessage = response.data.message || 'Successfully Registered !';
+            this.validationMessage = response.data.message || 'Successfully Registered!';
             setTimeout(() => {
               this.isValid = false;
               this.validationMessage = "";
@@ -87,6 +95,10 @@ export default {
             }, 3000);
           });
       });
+    },
+    validatePassword(password) {
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+      return regex.test(password);
     }
   }
 };
