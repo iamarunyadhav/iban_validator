@@ -1,41 +1,51 @@
-# .
+# IBAN Validation System - Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+This is the frontend part of the IBAN Validation System built with Vue.js. It provides a user interface for registering, logging in, and validating IBAN numbers.
 
-## Recommended IDE Setup
+## Technologies Used
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- Vue.js
+- Vue Router for SPA navigation
+- Axios for making HTTP requests
+- Bootstrap for responsive and modern UI components
 
-## Customize configuration
+## Getting Started
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+These instructions will get you a copy of the project up and running on your local machine for development purposes.
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed:
+- Node.js (LTS version recommended)
+- npm (comes with Node.js)
+
+### Cloning the Repository
+
+Start by cloning the frontend repository to your local machine:
+
+```bash
+git clone https://github.com/iamarunyadhav/iban_validator.git
+cd iban_validator/frontend
+
+## create  .env file
+cp .env.example .env
+
+# endpoint
+VUE_APP_API_ENDPOINT=http://localhost:8000/api/v1
 
 ## Project Setup
 
 ```sh
 npm install
+npm run serve
+
 ```
 
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
+## build 
 ```sh
 npm run build
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
 
-```sh
-npm run test:unit
-```
 
-### Lint with [ESLint](https://eslint.org/)
 
-```sh
-npm run lint
-```
