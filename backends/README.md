@@ -55,6 +55,10 @@ php artisan key:generate
 ###migarate the database
 php artisan migrate
 
+##Db seed for default user/admin
+php artisan db:seed
+
+
 ## Start backend server
 php artisan serve
 
@@ -67,6 +71,8 @@ Happy start
 ## useful commands
 php artisan migrate:refresh
 php artisan optimize:clear
+
+
 
 
 

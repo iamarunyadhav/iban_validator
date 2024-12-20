@@ -19,104 +19,53 @@ class RegisterController extends Controller
      * @return User
      */
     public function createUser(Request $request)
-    {
+        {
+            try {
+                // Enhanced password validation rules
+                $validator = Validator::make($request->all(), [
+                    'name' => 'required',
+                    'email' => 'required|email|unique:users,email',
+                    'password' => [
+                        'required',
+                        'min:8', // minimum 8 characters
+                        'regex:/[a-z]/',      // must contain at least one lowercase letter
+                        'regex:/[A-Z]/',      // must contain at least one uppercase letter
+                        'regex:/[0-9]/',      // must contain at least one digit
+                        'regex:/[@$!%*#?&]/', // must contain a special character
+                    ]
+                ]);
 
-        try {
-            // Validation rules
-            $validator = Validator::make($request->all(), [
-                'name' => 'required',
-                'email' => 'required|email|unique:users,email',
-                'password' => 'required'
-            ]);
-    
-            // Check if validation fails
-            if ($validator->fails()) {
-                $errors = $validator->errors();
-                $customErrors = [];
-    
-                // Customizing error messages
-                foreach ($errors->getMessages() as $field => $message) {
-                    if ($field === 'email' && in_array('The email has already been taken.', $message)) {
-                        $customErrors[$field] = ['This email address is already registered with us. Please use another email.'];
-                    } else {
-                        $customErrors[$field] = $message;
-                    }
+                // Check if validation fails
+                if ($validator->fails()) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Validation errors',
+                        'errors' => $validator->errors()
+                    ], 422); // Using 422 Unprocessable Entity for validation errors
                 }
-    
+
+                // Creating the user
+                $user = User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password)
+                ]);
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'User Created Successfully',
+                    'token' => $user->createToken("API TOKEN")->plainTextToken
+                ], 201);
+
+            } catch (\Throwable $th) {
+                Log::error('Error creating user: ' . $th->getMessage());
+
                 return response()->json([
                     'status' => false,
-                    'message' => 'Validation error or Duplicated email',
-                    'errors' => $customErrors
-                ], 401);  // Using 401 Unauthorized might not be appropriate for validation errors. Consider using 422 Unprocessable Entity.
+                    'message' => 'Failed to create user due to server error'
+                ], 500);
             }
-    
-            // Creating the user
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password)
-            ]);
-    
-            return response()->json([
-                'status' => true,
-                'message' => 'User Created Successfully',
-                'token' => $user->createToken("API TOKEN")->plainTextToken
-            ], 201);
-    
-        } catch (\Throwable $th) {
-            // It's a good idea to log this error.
-            Log::error('Error creating user: ' . $th->getMessage());
-    
-            return response()->json([
-                'status' => false,
-                'message' => 'Failed to create user due to a server error.'
-            ], 500);
         }
+
     }
-
-    /**
-     * Login The User
-     * @param Request $request
-     * @return User
-     */
-    // public function loginUser(Request $request)
-    // {
-    //     try {
-    //         $validateUser = Validator::make($request->all(),
-    //         [
-    //             'email' => 'required|email',
-    //             'password' => 'required'
-    //         ]);
-
-    //         if($validateUser->fails()){
-    //             return response()->json([
-    //                 'status' => false,
-    //                 'message' => 'validation error',
-    //                 'errors' => $validateUser->errors()
-    //             ], 401);
-    //         }
-
-    //         if(!Auth::attempt($request->only(['email', 'password']))){
-    //             return response()->json([
-    //                 'status' => false,
-    //                 'message' => 'Email & Password does not match with our record.',
-    //             ], 401);
-    //         }
-
-    //         $user = User::where('email', $request->email)->first();
-    //         return response()->json([
-    //             'status' => true,
-    //             'message' => 'User Logged In Successfully',
-    //             'token' => $user->createToken("API TOKEN")->plainTextToken,
-    //             'user_id' => $user->id,
-    //             'user_role' => $user->role
-    //         ], 200);
-
-    //     } catch (\Throwable $th) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => $th->getMessage()
-    //         ], 500);
-    //     }
-    // }
-}
+            
