@@ -12,7 +12,7 @@ export default createStore({
   },
   actions: {
     logout({ commit }) {
-      axios.post('/api/logout')
+      axios.post('http://127.0.0.1:8000/api/vi/logout')
         .then(() => {
           commit('setAuthentication', false);
           // Optionally handle other cleanup tasks

@@ -1,7 +1,7 @@
 <template>
   <footer class="footer">
-    <div class="container text-center">
-      Powered by Ascentic © {{ currentYear }}
+    <div class="container text-center text-white">
+      Powered by Ascentic Poc© {{ currentYear }}
     </div>
   </footer>
 </template>
@@ -20,7 +20,7 @@ export default {
 <style scoped>
 .footer {
   padding: 20px;
-  background-color: #f8f9fa;
+  background-color: #007bff;
   border-top: 1px solid #e7e7e7;
   color: #777;
   position: absolute;
