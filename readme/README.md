@@ -61,7 +61,9 @@ php artisan migrate
 php artisan serve
 
 
-### This will typically serve your backend on http://127.0.0.1:8000  (run this port as default frontend .env config is not working)
+### This will typically serve your backend on 
+
+Note : http://127.0.0.1:8000   #(run this port as default frontend .env config is not working)
 
 Happy start
 
@@ -105,7 +107,7 @@ git clone https://github.com/iamarunyadhav/iban_validator.git
 cd iban_validator/frontend
 
 ## create  .env file
-cp .env.example .env
+use config.js
 
 # endpoint
 VUE_APP_API_ENDPOINT=http://localhost:8000/api/v1
