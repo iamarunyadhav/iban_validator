@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use Illuminate\Support\Facades\DB as FacadesDB;
 
 class IbanService
 {
@@ -39,4 +40,14 @@ class IbanService
         }
         return null;
     }
+    
+    public function getIbanUserList()
+    {
+    $ibansWithUsers = FacadesDB::table('ibans')
+    ->join('users', 'ibans.user_id', '=', 'users.id')
+    ->select('ibans.*', 'users.name', 'users.email')
+    ->paginate(10);
+    return $ibansWithUsers;
+    }
+    
 }

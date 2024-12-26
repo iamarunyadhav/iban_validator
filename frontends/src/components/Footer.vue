@@ -11,24 +11,22 @@ export default {
   name: 'FooterBar',
   data() {
     return {
-      currentYear: new Date().getFullYear()  // Gets the current year dynamically
+      currentYear: new Date().getFullYear(), // Gets the current year dynamically
     };
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
 .footer {
-  padding: 20px;
   background-color: #007bff;
-  border-top: 1px solid #e7e7e7;
-  color: #777;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-}
-.container {
-  padding: 10px;
+  color: #ffffff;
+  padding: 10px 0;
   text-align: center;
+  width: 100%;
+  position: fixed; /* Makes the footer fixed */
+  bottom: 0; /* Positions it at the bottom of the page */
+  left: 0;
+  z-index: 1000; /* Ensures the footer stays on top of other content */
 }
 </style>

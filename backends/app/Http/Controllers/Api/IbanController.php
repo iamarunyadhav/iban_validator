@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Iban as ResourcesIban;
 use Illuminate\Http\Request;
 use App\Models\Iban;
 use Illuminate\Database\QueryException;
@@ -26,8 +27,9 @@ class IbanController extends Controller
     public function validateIban(Request $request)
     {
        
-        $request->validate(['iban' => 'required|string|unique:ibans,iban']);
         $iban = strtoupper(str_replace(' ', '', $request->iban));
+        $request->validate(['iban' => 'required|string|unique:ibans,iban']);
+       
         $validationResult = $this->ibanService->validateIban($iban);
 
         if (!$validationResult['valid']) {
@@ -44,14 +46,13 @@ class IbanController extends Controller
         return response()->json(['message' => 'IBAN is valid and saved', 'iban' => $ibanRecord], 201);
     }
 
+
     public function ibanUsersList()
     {
-        $ibansWithUsers = FacadesDB::table('ibans')
-            ->join('users', 'ibans.user_id', '=', 'users.id')
-            ->select('ibans.*', 'users.name', 'users.email')
-            ->paginate(10);
+        $ibansWithUsers=$this->ibanRepository->getIbanUserList();
         return $ibansWithUsers;
     }
+   
 }
 
 

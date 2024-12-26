@@ -1,20 +1,18 @@
 <template>
   <div>
     <Navbar/>
-  <div class="container mt-5">
-    <ul class="nav nav-tabs">
-      <li class="nav-item">
-        <a class="nav-link" :class="{ active: activeTab === 'info' }" href="#" @click="activeTab = 'info'">IBAN Info</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" :class="{ active: activeTab === 'validator' }" href="#" @click="activeTab = 'validator'">IBAN Validator</a>
-      </li>
-    </ul>
+    <div class="container mt-5">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link" :class="{ active: activeTab === 'info' }" href="#" @click.prevent="activeTab = 'info'">IBAN Info</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" :class="{ active: activeTab === 'validator' }" href="#" @click.prevent="activeTab = 'validator'">IBAN Validator</a>
+        </li>
+      </ul>
 
-    <div class="tab-content mt-3">
-      <div v-show="activeTab === 'info'">
-        <!-- Info Component -->
-        <div class="container">
+      <div class="tab-content mt-3">
+        <div v-show="activeTab === 'info'" class="container">
           <h2 class="mb-3">IBAN Format and Structure Information</h2>
           <p><strong>IBAN Structure Validation:</strong> This includes checking the specific positions and characters inside the IBAN as per each country's internal rules. This check is crucial where internal account number check digit validation is not supported.</p>
           <p><strong>Possible Outcomes:</strong></p>
@@ -30,11 +28,33 @@
             <li>Structure validation - Assesses if bank and branch codes, if applicable, are alpha, numeric, or alphanumeric.</li>
           </ul>
         </div>
-      </div>
-      <div v-show="activeTab === 'validator'">
-        <!-- Validator Component -->
-        <div class="row justify-content-center">
-          <div class="col-md-8">
+
+        <div v-show="activeTab === 'validator'" class="row justify-content-center">
+          <div class="col-md-10">
+            <div class="card mb-3">
+              <h5 class="card-header">Example IBAN for the United Kingdom</h5>
+              <div class="row card-body">
+                <div class="row">
+
+                    <div class="col-md-3">
+                      <p><strong>Country Code:</strong> GB (Great Britain)</p>
+                    </div>
+                    <div class="col-md-2">
+                      <p><strong>Check Digits:</strong> 12</p>
+                    </div>
+                    <div class="col-md-2">
+                      <p><strong>Bank Code:</strong> ABCD</p>
+                    </div>
+                    <div class="col-md-2">
+                      <p><strong>Branch Code:</strong> 123***</p>
+                    </div>
+                    <div class="col-md-3">
+                      <p><strong>Bank Account Number:</strong> 123*****</p>
+                    </div>
+                    <div class="col-md-1"></div>
+                 </div>
+              </div>
+            </div>
             <div class="card">
               <h5 class="card-header">IBAN Validator</h5>
               <div class="card-body">
@@ -54,8 +74,7 @@
         </div>
       </div>
     </div>
-  </div>
-  <Footer/>
+    <Footer/>
   </div>
 </template>
 
@@ -72,14 +91,16 @@ export default {
   },
   data() {
     return {
+      activeTab: 'info', // Default to showing IBAN info
       iban: '',
       validationMessage: '',
       isValid: false,
-      apiUrl:config.apiUrl
+      apiUrl: config.apiUrl
     };
   },
   methods: {
     validateIban() {
+      this.iban = this.iban.replace(/\s+/g, '');
       const regex = /^([A-Z]{2}\d{2}[A-Z\d]{1,30})$/;
       if (!regex.test(this.iban)) {
         this.isValid = false;
@@ -87,10 +108,10 @@ export default {
         return;
       }
 
-      const payload={
+      const payload = {
         iban: this.iban,
-        id:localStorage.getItem('user_id')
-      }
+        id: localStorage.getItem('user_id')
+      };
 
       axios.get('sanctum/csrf-cookie').then(response => {
         axios.post(`${this.apiUrl}/v1/ibans/check`, payload, {
@@ -100,24 +121,16 @@ export default {
         })
         .then(response => {
           this.isValid = true;
-            this.validationMessage = response.data.message || 'IBAN Saved Successfully !';
-            setTimeout(() => {
-              this.isValid = false;
-              this.validationMessage = "";
-            }, 3000);
+          this.validationMessage = response.data.message || 'IBAN is valid!';
         })
         .catch(error => {
           this.isValid = false;
           this.validationMessage = error.response ? error.response.data.message : 'Network or server error occurred while validating IBAN.';
-          setTimeout(() => {
-            this.validationMessage = "";
-          }, 3000);
         });
-
-    })
+      });
+    }
   }
-}
-}
+};
 </script>
 
 
