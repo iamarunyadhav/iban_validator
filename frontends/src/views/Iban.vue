@@ -35,24 +35,22 @@
               <h5 class="card-header">Example IBAN for the United Kingdom</h5>
               <div class="row card-body">
                 <div class="row">
-
-                    <div class="col-md-3">
-                      <p><strong>Country Code:</strong> GB (Great Britain)</p>
-                    </div>
-                    <div class="col-md-2">
-                      <p><strong>Check Digits:</strong> 12</p>
-                    </div>
-                    <div class="col-md-2">
-                      <p><strong>Bank Code:</strong> ABCD</p>
-                    </div>
-                    <div class="col-md-2">
-                      <p><strong>Branch Code:</strong> 123***</p>
-                    </div>
-                    <div class="col-md-3">
-                      <p><strong>Bank Account Number:</strong> 123*****</p>
-                    </div>
-                    <div class="col-md-1"></div>
-                 </div>
+                  <div class="col-md-3">
+                    <p><strong>Country Code:</strong> GB (Great Britain)</p>
+                  </div>
+                  <div class="col-md-2">
+                    <p><strong>Check Digits:</strong> 12</p>
+                  </div>
+                  <div class="col-md-2">
+                    <p><strong>Bank Code:</strong> ABCD</p>
+                  </div>
+                  <div class="col-md-2">
+                    <p><strong>Branch Code:</strong> 123***</p>
+                  </div>
+                  <div class="col-md-3">
+                    <p><strong>Bank Account Number:</strong> 123*****</p>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="card">
@@ -92,7 +90,7 @@ export default {
   },
   data() {
     return {
-      activeTab: 'info', // Default to showing IBAN info
+      activeTab: 'info',
       iban: '',
       validationMessage: '',
       isValid: false,
@@ -100,35 +98,42 @@ export default {
     };
   },
   methods: {
-    validateIban() {
-      this.iban = this.iban.replace(/\s+/g, '');
+    async validateIban() {
+      this.iban = this.iban.replace(/\s+/g, ''); // Normalize input
       const regex = /^([A-Z]{2}\d{2}[A-Z\d]{1,30})$/;
+
       if (!regex.test(this.iban)) {
-        setTimeout(() => {
         this.isValid = false;
         this.validationMessage = 'Invalid IBAN format. Please check and try again.';
         return;
-      }, 3000);
+        setTimeout(() => {
+          this.validationMessage = '';
+        }, 3000);
       }
-      getCsrfCookie().then(() => {
-        validateIban(this.iban, localStorage.getItem('token'))
-          .then(response => {
-            setTimeout(() => {
-            this.isValid = true;
-            this.validationMessage = response.data.message || 'IBAN is valid!';
-          }, 3000);
-          })
-          .catch(error => {
-            setTimeout(() => {
-            this.isValid = false;
-            this.validationMessage = error.response ? error.response.data.message : 'Network or server error occurred while validating IBAN.';
-          }, 3000);
-          });
-      });
+
+      try {
+        await getCsrfCookie();
+        const response = await validateIban(this.iban, localStorage.getItem('token'));
+        this.isValid = true;
+        this.validationMessage = response.data.message || 'IBAN is valid!';
+
+        setTimeout(() => {
+          this.isValid = false;
+          this.validationMessage = '';
+          this.$router.push(response.data.user_role === 'admin' ? '/admin-dashboard' : '/user-dashboard');
+        }, 3000); // Redirect after showing message for 3 seconds
+      } catch (error) {
+        this.isValid = false;
+        this.validationMessage = (error.response && error.response.data.message) || 'Network or server error occurred while validating IBAN.';
+        setTimeout(() => {
+          this.validationMessage = '';
+        }, 3000);
+      }
     }
   }
 };
 </script>
+
 
 <style scoped>
 /* General Page Styling */
