@@ -104,19 +104,25 @@ export default {
       this.iban = this.iban.replace(/\s+/g, '');
       const regex = /^([A-Z]{2}\d{2}[A-Z\d]{1,30})$/;
       if (!regex.test(this.iban)) {
+        setTimeout(() => {
         this.isValid = false;
         this.validationMessage = 'Invalid IBAN format. Please check and try again.';
         return;
+      }, 3000);
       }
       getCsrfCookie().then(() => {
         validateIban(this.iban, localStorage.getItem('token'))
           .then(response => {
+            setTimeout(() => {
             this.isValid = true;
             this.validationMessage = response.data.message || 'IBAN is valid!';
+          }, 3000);
           })
           .catch(error => {
+            setTimeout(() => {
             this.isValid = false;
             this.validationMessage = error.response ? error.response.data.message : 'Network or server error occurred while validating IBAN.';
+          }, 3000);
           });
       });
     }
