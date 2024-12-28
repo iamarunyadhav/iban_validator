@@ -83,6 +83,7 @@ import axios from 'axios';
 import Navbar from '@/components/Navbar.vue';
 import Footer from '@/components/Footer.vue';
 import config from '@/config';
+import { getCsrfCookie, validateIban } from '@/services/IbanService';
 
 export default {
   components: {
@@ -107,32 +108,21 @@ export default {
         this.validationMessage = 'Invalid IBAN format. Please check and try again.';
         return;
       }
-
-      const payload = {
-        iban: this.iban,
-        id: localStorage.getItem('user_id')
-      };
-
-      axios.get('sanctum/csrf-cookie').then(response => {
-        axios.post(`${this.apiUrl}/v1/ibans/check`, payload, {
-          headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('token')
-          }
-        })
-        .then(response => {
-          this.isValid = true;
-          this.validationMessage = response.data.message || 'IBAN is valid!';
-        })
-        .catch(error => {
-          this.isValid = false;
-          this.validationMessage = error.response ? error.response.data.message : 'Network or server error occurred while validating IBAN.';
-        });
+      getCsrfCookie().then(() => {
+        validateIban(this.iban, localStorage.getItem('token'))
+          .then(response => {
+            this.isValid = true;
+            this.validationMessage = response.data.message || 'IBAN is valid!';
+          })
+          .catch(error => {
+            this.isValid = false;
+            this.validationMessage = error.response ? error.response.data.message : 'Network or server error occurred while validating IBAN.';
+          });
       });
     }
   }
 };
 </script>
-
 
 <style scoped>
 /* General Page Styling */

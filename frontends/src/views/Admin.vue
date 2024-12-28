@@ -4,36 +4,33 @@
     <div class="container mt-5">
       <ul class="nav nav-tabs">
         <li class="nav-item">
-          <a class="nav-link" :class="{ active: activeTab === 'user' }" @click.prevent="activeTab = 'user'">Users</a>
+          <a class="nav-link" :class="{ active: activeTab === 'user' }" @click.prevent="activeTab = 'user'">IBAN List</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" :class="{ active: activeTab === 'ibanList' }" @click.prevent="activeTab = 'ibanList'">IBAN List</a>
+          <a class="nav-link" :class="{ active: activeTab === 'ibanList' }" @click.prevent="activeTab = 'ibanList'">Users IBAN List</a>
         </li>
       </ul>
-
       <div class="tab-content mt-3">
         <div v-show="activeTab === 'user'">
-          <h2 class="fw-bold">IBAN List</h2>
           <table class="table table-bordered">
-            <thead class="fw-bold">
+            <thead>
               <tr>
                 <th class="fw-bold">IBAN Number</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="iban in ibanList.data" :key="iban.id">
-                <td>{{ iban.iban }}</td>
+              <tr v-for="detail in ibanList.data" :key="detail.id">
+                <td>{{ detail.iban }}</td>
               </tr>
             </tbody>
           </table>
-          <!-- Pagination Controls -->
           <nav>
             <ul class="pagination">
               <li class="page-item" :class="{ disabled: ibanList.current_page === 1 }">
-                <a class="page-link" href="#" @click="fetchIbanList(ibanList.current_page - 1)">Previous</a>
+                <a class="page-link" href="#" @click.prevent="loadIbanList(ibanList.current_page - 1)">Previous</a>
               </li>
               <li class="page-item" :class="{ disabled: ibanList.current_page === ibanList.last_page }">
-                <a class="page-link" href="#" @click="fetchIbanList(ibanList.current_page + 1)">Next</a>
+                <a class="page-link" href="#" @click.prevent="loadIbanList(ibanList.current_page + 1)">Next</a>
               </li>
             </ul>
           </nav>
@@ -44,7 +41,7 @@
             <thead>
               <tr>
                 <th class="fw-bold">User ID</th>
-                <th class="fw-bold"> User Name</th>
+                <th class="fw-bold">User Name</th>
                 <th class="fw-bold">Email</th>
                 <th class="fw-bold">IBAN Number</th>
               </tr>
@@ -58,74 +55,58 @@
               </tr>
             </tbody>
           </table>
-          <!-- Pagination Controls -->
           <nav>
             <ul class="pagination">
               <li class="page-item" :class="{ disabled: ibanList.current_page === 1 }">
-                <a class="page-link" href="#" @click="fetchIbanList(ibanList.current_page - 1)">Previous</a>
+                <a class="page-link" href="#" @click.prevent="loadIbanList(ibanList.current_page - 1)">Previous</a>
               </li>
               <li class="page-item" :class="{ disabled: ibanList.current_page === ibanList.last_page }">
-                <a class="page-link" href="#" @click="fetchIbanList(ibanList.current_page + 1)">Next</a>
+                <a class="page-link" href="#" @click.prevent="loadIbanList(ibanList.current_page + 1)">Next</a>
               </li>
             </ul>
           </nav>
         </div>
       </div>
     </div>
+    <Footer/>
   </div>
 </template>
 
 
 
-<script>
-import axios from 'axios';
-import Navbar from '@/components/Navbar.vue';
-import Pagination from '@/components/Pagination.vue';
-import config from '@/config';
-export default {
-  components: {
-    Navbar,
-    Pagination  // Make sure to register the Pagination component here
-  },
-  data() {
-  return {
-    activeTab: 'user',
-    ibanList: {
-      data: [],
-      current_page: 1,
-      last_page: 1,
-      links: []
-    },
-    apiUrl:config.apiUrl
-  };
-},
-methods: {
-  fetchIbanList(page = 1) {
-    // First, ensure CSRF protection by retrieving the CSRF cookie
-    axios.get('/sanctum/csrf-cookie').then(response => {
-      // After ensuring the CSRF cookie is set, make the actual GET request
-      axios.get(`${this.apiUrl}/v1/users/ibans/list?page=${page}`, {
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('token')  // Ensure you have the auth token
-        }
-      })
-      .then(response => {
-        this.ibanList = response.data;
-      })
-      .catch(error => {
-        console.error('Error fetching IBAN list:', error);
-      });
-    }).catch(error => {
-      console.error('Error retrieving CSRF token:', error);
-    });
-  }
-},
 
-  mounted() {
-    this.fetchIbanList();
+<script>
+import { fetchIbanList } from '@/services/IbanService'; // adjust path as needed
+export default {
+  data() {
+    return {
+      activeTab: 'user',
+      ibanList: {
+        data: [],
+        current_page: 1,
+        last_page: 1
+      }
+    };
+  },
+  methods: {
+    loadIbanList(page) {
+      const token = localStorage.getItem('token'); // assuming token is stored here
+      fetchIbanList(page, token).then(response => {
+        this.ibanList.data = response.data.data;
+        this.ibanList.current_page = response.data.current_page;
+        this.ibanList.last_page = response.data.last_page;
+      }).catch(error => {
+        console.error('Error fetching data:', error);
+        // handle error appropriately
+      });
+    }
+  },
+  created() {
+    this.loadIbanList(this.ibanList.current_page); // Load initial page
   }
 }
 </script>
+
 
 
 

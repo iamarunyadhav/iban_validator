@@ -50,11 +50,10 @@
 </div>
 </template>
 <script>
-
-import axios from 'axios';
+import { register } from '@/services/AuthService';
 import Navbar from '@/components/Navbar.vue';
 import Footer from '@/components/Footer.vue';
-import config from '@/config';
+
 export default {
   components: {
     Navbar,
@@ -68,7 +67,6 @@ export default {
         password: '',
         password_confirmation: ''
       },
-      apiUrl: config.apiUrl ,
       validationMessage: '',
       isValid: false,
       passwordErrors: ''
@@ -76,30 +74,27 @@ export default {
   },
   methods: {
     register() {
-
       if (!this.validatePassword(this.form.password)) {
         this.passwordErrors = 'Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character.';
         return;
       }
-      axios.get('/sanctum/csrf-cookie').then(response => {
-        axios.post(`${this.apiUrl}/v1/register`, this.form)
-          .then(response => {
-            this.isValid = true; // Set to true on successful register
-            this.validationMessage = response.data.message || 'Successfully Registered!';
-            setTimeout(() => {
-              this.isValid = false;
-              this.validationMessage = "";
-              this.$router.push('/');
-            }, 3000);
-          })
-          .catch(error => {
+      register(this.form)
+        .then(response => {
+          this.isValid = true; // Set to true on successful registration
+          this.validationMessage = response.data.message || 'Successfully Registered!';
+          setTimeout(() => {
             this.isValid = false;
-            this.validationMessage = error.response.data.message || 'Register failed. Please check your input data.';
-            setTimeout(() => {
-              this.validationMessage = "";
-            }, 3000);
-          });
-      });
+            this.validationMessage = "";
+            this.$router.push('/');
+          }, 3000);
+        })
+        .catch(error => {
+          this.isValid = false;
+          this.validationMessage = (error.response && error.response.data.message) || 'Register failed. Please check your input data.';
+          setTimeout(() => {
+            this.validationMessage = "";
+          }, 3000);
+        });
     },
     validatePassword(password) {
       const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
@@ -108,6 +103,7 @@ export default {
   }
 };
 </script>
+
 
 <style scoped>
 /* Overall container and spacing adjustments */

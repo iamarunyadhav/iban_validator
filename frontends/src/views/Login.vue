@@ -34,59 +34,50 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { login } from '@/services/AuthService';
 import Navbar from '@/components/Navbar.vue';
 import Footer from '@/components/Footer.vue';
-import config from '@/config';
+
 export default {
   components: {
     Navbar,
     Footer
   },
   data() {
-      return {
-        form: {
-          email: '',
-          password: ''
-        },
-        validationMessage: '',
-        isValid: false,
-        apiUrl:config.apiUrl
-      };
+    return {
+      form: {
+        email: '',
+        password: ''
+      },
+      validationMessage: '',
+      isValid: false,
+    };
   },
-
   methods: {
     login() {
-      axios.get('/sanctum/csrf-cookie').then(response => {
-        axios.post(`${this.apiUrl}/v1/login`, this.form, { withCredentials: true })
-          .then(response => {
-            // console.log(response.data.user_id);
-            this.isValid = true; // Set to true on successful login
-            this.validationMessage = response.data.message || 'Successfully logged in!';
-            this.$store.commit('setAuthentication', true);
-            localStorage.setItem('token',response.data.token);
-            localStorage.setItem('user_id',response.data.user_id);
-            setTimeout(() => {
-              this.isValid = false;
-              this.validationMessage = "";
-              this.$router.push(response.data.user_role === 'admin' ? '/admin-dashboard' : '/user-dashboard');
-            }, 3000);
-          })
-          .catch(error => {
-            this.isValid = false; // Should be false when there is an error
-            this.validationMessage = (error.response && error.response.data.message) || 'Login failed. Please check your credentials.';
-            setTimeout(() => {
-              this.validationMessage = "";
-            }, 3000);
-          });
-      }).catch(error => {
-        this.isValid = false; // Should be false on CSRF error
-        this.validationMessage = (error.response && error.response.data.message) || 'CSRF cookie error. Please try again.';
-        setTimeout(() => {
-          this.validationMessage = "";
-        }, 3000);
-      });
-    }}}
+      login(this.form)
+        .then(response => {
+          this.isValid = true; // Set to true on successful login
+          this.validationMessage = response.data.message || 'Successfully logged in!';
+          this.$store.commit('setAuthentication', true);
+          localStorage.setItem('token', response.data.token);
+          localStorage.setItem('user_id', response.data.user_id);
+          setTimeout(() => {
+            this.isValid = false;
+            this.validationMessage = "";
+            this.$router.push(response.data.user_role === 'admin' ? '/admin-dashboard' : '/user-dashboard');
+          }, 3000);
+        })
+        .catch(error => {
+          this.isValid = false; // Should be false when there is an error
+          this.validationMessage = (error.response && error.response.data.message) || 'Login failed. Please check your credentials.';
+          setTimeout(() => {
+            this.validationMessage = "";
+          }, 3000);
+        });
+    }
+  }
+};
 </script>
 
 <style scoped>
